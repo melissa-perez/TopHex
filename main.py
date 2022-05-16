@@ -19,7 +19,9 @@ def valid_image(img_name):
     :param img_name: str
     :return: bool
     """
-    return False
+    is_valid_name = '.' in img_name
+    is_valid_ext = img_name.rsplit('.', 1)[1].lower() in IMG_EXTENSION
+    return is_valid_name and is_valid_ext
 
 
 @app.route('/')
