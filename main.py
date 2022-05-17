@@ -1,6 +1,7 @@
 import numpy as np
 import os
 import typing
+import requests
 import urllib.request
 import matplotlib.pyplot as plt
 from flask import Flask, flash, request, redirect, url_for, render_template
@@ -15,6 +16,9 @@ IMG_EXTENSION = ('png', 'jpg', 'jpeg', 'gif')
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+IMG_MS_SERVER = 'http://127.0.0.1:4200'
+IMG_QUERY_SITE = 'https://unsplash.com/s/photos/sky?orientation=squarish'
+
 Bootstrap(app)
 
 
@@ -40,9 +44,19 @@ def get_home_page():
 
 @app.route('/', methods=['POST'])
 def image_upload():
+    if request.form['random_button'] == 'Random':
+        url = create_random_image_url()
+        print(url)
+        response = requests.get(url, params={'url': IMG_QUERY_SITE})
+        print(response.text)
+        #return response.text
+        return render_template('index.html', filename=response.text, is_upload=False)
+
+
     if 'file' not in request.files:
         flash('No file part')
         return redirect(request.url)
+
     file = request.files['file']
     if file.filename == '':
         flash('No image selected for uploading')
@@ -51,16 +65,32 @@ def image_upload():
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         # print('upload_image filename: ' + filename)
-        #flash('Image successfully uploaded and displayed below')
+        # flash('Image successfully uploaded and displayed below')
         return render_template('index.html', filename=filename)
     else:
-        #flash('Allowed image types are -> png, jpg, jpeg, gif')
+        # flash('Allowed image types are -> png, jpg, jpeg, gif')
         return redirect(request.url)
+
 
 @app.route('/display/<filename>')
 def display_image(filename):
-	#print('display_image filename: ' + filename)
-	return redirect(url_for('static', filename='uploads/' + filename), code=301)
+    # print('display_image filename: ' + filename)
+    return redirect(url_for('static', filename='uploads/' + filename), code=301)
+
+
+def create_random_image_url():
+    """
+    Creates the URL for a random image from some site
+    and returns the string to call the image microservice.
+    :return: str
+    """
+    url_parts = [
+        IMG_MS_SERVER,
+        '/image_url_query'
+    ]
+    return ''.join(url_parts)
+
+    # http://127.0.0.1:4200/image_url_query?url=https://www.google.com
 
 
 if __name__ == '__main__':

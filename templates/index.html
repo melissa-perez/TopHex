@@ -19,12 +19,16 @@
 	  {% endif %}
 	{% endwith %}
 </p>
-{% if filename %}
+{% if filename and is_upload %}
 	<div>
 		<img src="{{ url_for('display_image', filename=filename) }}">
 	</div>
+{% elif filename%}
+	<div>
+		<img src="{{filename}}">
+	</div>
 {% endif %}
-<form method="post" action="/" enctype="multipart/form-data">
+<form method="POST" action="/" enctype="multipart/form-data">
     <dl>
 		<p>
 			<input type="file" name="file" autocomplete="off" required>
@@ -33,6 +37,13 @@
     <p>
 		<input type="submit" value="Submit">
 	</p>
+
+</form>
+<form method="POST" action="/" enctype="multipart/form-data">
+	<p>
+		<input type="submit" name="random_button" id="random_button" value="Random">
+	</p>
+
 </form>
 
     </div>
