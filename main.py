@@ -12,6 +12,7 @@ from numpy import asarray
 from requests import Response
 from werkzeug.utils import secure_filename
 from os.path import join, dirname, realpath
+from matplotlib.colors import rgb2hex
 
 # PROGRAM CONSTANTS
 
@@ -20,6 +21,7 @@ IMAGE_EXTENSIONS = ('png', 'jpg', 'jpeg', 'gif')
 IMAGE_MICROSERVICE_SERVER = 'http://127.0.0.1:4200'
 IMAGE_QUERY_SITE = 'https://unsplash.com/s/photos/sky?orientation=squarish'
 RANDOM_IMAGE_COUNTER = 0
+TOP_COLORS = 5
 
 # APP GLOBALS
 
@@ -102,7 +104,7 @@ def get_img_arr_dims(arr: np.ndarray) -> None:
     :param arr:
     :return: None
     """
-    if arr:
+    if arr.any():
         print(arr.ndim)
         print(arr.shape)
 
@@ -118,9 +120,13 @@ def image_upload():
     if request.form:
         url = create_random_image_url()
         # response is a text url
+        print("sending a request to ", url)
         response = requests.get(url, params={'url': IMAGE_QUERY_SITE})
+        print("received a response from ", url, " which was ", response.text)
+
         img_arr = None
-        img_arr = create_img_array(img_arr, file_name=response.text)
+        # img_arr = create_img_array(img_arr, file_name=response.text)
+        # print(img_arr)
         return render_template('index.html', filename=response.text, is_upload=False, hex_colors=img_arr)
     else:
         file = request.files['file']
@@ -131,9 +137,43 @@ def image_upload():
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         img_arr = None
         img_arr = create_img_array(img_arr, file_name=filename)
-        return render_template('index.html', filename=filename, is_upload=True, hex_colors=img_arr)
+        top_hex_list = top_hex_colors(img_arr)
+        return render_template('index.html', filename=filename, is_upload=True, hex_colors=top_hex_list)
     else:
         return redirect(request.url)
+
+
+def top_hex_colors(img_arr: np.ndarray,
+                   hex_colors_list: list = None) -> list:
+    """
+
+    :param hex_colors_list:
+    :param img_arr:
+    :return: list
+    """
+    colors_dict = {}
+    convert_to_color_codes = convert_to_hex(img_arr)
+
+    for color in convert_to_color_codes:
+        if color not in colors_dict:
+            colors_dict[color] = 1
+        else:
+            colors_dict[color] += 1
+
+    hex_colors_list = sorted(colors_dict, key=colors_dict.get, reverse=True)[:TOP_COLORS]
+    hex_colors_list = ['#' + code for code in hex_colors_list]
+    return hex_colors_list
+
+
+def convert_to_hex(top_values: np.ndarray) -> list:
+    """
+    Converts the values into equivalent hex values.
+
+    :param top_values: list
+    :return: list
+    """
+    top_values = (1 << 24) + ((top_values[:, :, 0] << 16) + (top_values[:, :, 1] << 8) + top_values[:, :, 2])
+    return [hex(x)[-6:] for x in top_values.ravel()]
 
 
 def valid_image(img_name) -> bool:
