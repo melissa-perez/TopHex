@@ -8,29 +8,62 @@ from flask import Flask, flash, request, redirect, url_for, render_template
 from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
 from PIL import Image
+from numpy import asarray
 from werkzeug.utils import secure_filename
+from os.path import join, dirname, realpath
 
 # PROGRAM CONSTANTS
-UPLOAD_FOLDER = 'static/uploads/'
-IMG_EXTENSION = ('png', 'jpg', 'jpeg', 'gif')
+UPLOAD_FOLDER = join(dirname(realpath(__file__)), 'static\\uploads\\')
+print(UPLOAD_FOLDER)
+IMAGE_EXTENSIONS = ('png', 'jpg', 'jpeg', 'gif')
+IMAGE_MICROSERVICE_SERVER = 'http://127.0.0.1:4200'
+IMAGE_QUERY_SITE = 'https://unsplash.com/s/photos/sky?orientation=squarish'
+
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
-IMG_MS_SERVER = 'http://127.0.0.1:4200'
-IMG_QUERY_SITE = 'https://unsplash.com/s/photos/sky?orientation=squarish'
 
-Bootstrap(app)
-
-
-def valid_image(img_name):
+def valid_image(img_name) -> bool:
     """
     Determines if the img ends with a valid extension.
+
     :param img_name: str
     :return: bool
     """
     is_valid_name = '.' in img_name
-    is_valid_ext = img_name.rsplit('.', 1)[1].lower() in IMG_EXTENSION
+    is_valid_ext = img_name.rsplit('.', 1)[1].lower() in IMAGE_EXTENSIONS
+
     return is_valid_name and is_valid_ext
+
+
+def convert_to_jpg():
+    """
+    Convert img types to jpg to use in program. Only three channels.
+    """
+    return
+
+
+def create_img_array(np_arr: np.ndarray = None,
+                     from_internet: bool = False,
+                     file_name: str = None,
+                     url: str = None) -> np.ndarray:
+    """
+    Creates an of numeric values representing the
+    image.
+
+    :param np_arr: empty object to load data into
+    :param from_internet: determines if query is from microservice
+    :param file_name: name for local image
+    :param url: url for internet image
+
+    :return: np.ndarray
+    """
+    if from_internet:
+        pass
+    else:
+        load_image_to_array = Image.open(f'{UPLOAD_FOLDER}/{file_name}')
+        if not np_arr:
+            np_arr = asarray(load_image_to_array)
+    return np_arr
 
 
 @app.route('/')
@@ -44,18 +77,19 @@ def get_home_page():
 
 @app.route('/', methods=['POST'])
 def image_upload():
-    if request.form['random_button'] == 'Random':
+    """
+    Displays the image to the screen.
+
+    :return:
+    """
+    # if there is a form, then proceed with rand
+    if request.form:
         url = create_random_image_url()
-        print(url)
-        response = requests.get(url, params={'url': IMG_QUERY_SITE})
-        print(response.text)
-        #return response.text
+        # print(url)
+        response = requests.get(url, params={'url': IMAGE_QUERY_SITE})
+        # print(response.text)
+        # return response.text
         return render_template('index.html', filename=response.text, is_upload=False)
-
-
-    if 'file' not in request.files:
-        flash('No file part')
-        return redirect(request.url)
 
     file = request.files['file']
     if file.filename == '':
@@ -66,7 +100,11 @@ def image_upload():
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         # print('upload_image filename: ' + filename)
         # flash('Image successfully uploaded and displayed below')
-        return render_template('index.html', filename=filename)
+        arr = None
+        arr = create_img_array(arr, file_name=filename)
+        print(arr.ndim)
+        print(arr.shape)
+        return render_template('index.html', filename=filename, is_upload=True)
     else:
         # flash('Allowed image types are -> png, jpg, jpeg, gif')
         return redirect(request.url)
@@ -85,12 +123,10 @@ def create_random_image_url():
     :return: str
     """
     url_parts = [
-        IMG_MS_SERVER,
+        IMAGE_MICROSERVICE_SERVER,
         '/image_url_query'
     ]
     return ''.join(url_parts)
-
-    # http://127.0.0.1:4200/image_url_query?url=https://www.google.com
 
 
 if __name__ == '__main__':
