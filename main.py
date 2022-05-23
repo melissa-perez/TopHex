@@ -9,54 +9,25 @@ from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
 from PIL import Image
 from numpy import asarray
+from requests import Response
 from werkzeug.utils import secure_filename
 from os.path import join, dirname, realpath
 
 # PROGRAM CONSTANTS
+
 UPLOAD_FOLDER = join(dirname(realpath(__file__)), 'static\\uploads\\')
 IMAGE_EXTENSIONS = ('png', 'jpg', 'jpeg', 'gif')
 IMAGE_MICROSERVICE_SERVER = 'http://127.0.0.1:4200'
 IMAGE_QUERY_SITE = 'https://unsplash.com/s/photos/sky?orientation=squarish'
 RANDOM_IMAGE_COUNTER = 0
+
 # APP GLOBALS
+
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 
 # PROGRAM FUNCTIONS
-def create_random_image_url():
-    """
-    Creates the URL for a random image from some <<IMAGE_QUERY_SITE>>
-    and returns the URL as a string.
-
-    :return: str
-    """
-    url_parts = [
-        IMAGE_MICROSERVICE_SERVER,
-        '/image_url_query'
-    ]
-    return ''.join(url_parts)
-
-
-def valid_image(img_name) -> bool:
-    """
-    Determines if the img ends with a valid extension.
-
-    :param img_name: str
-    :return: bool
-    """
-    is_valid_name = '.' in img_name
-    is_valid_ext = img_name.rsplit('.', 1)[1].lower() in IMAGE_EXTENSIONS
-
-    return is_valid_name and is_valid_ext
-
-
-def convert_to_jpg():
-    """
-    Convert img types to jpg to use in program. Only three channels.
-    """
-    return
-
 
 def create_img_array(np_arr: np.ndarray = None,
                      from_internet: bool = False,
@@ -82,6 +53,38 @@ def create_img_array(np_arr: np.ndarray = None,
     return np_arr
 
 
+def convert_to_jpg():
+    """
+    Convert img types to jpg to use in program. Only three channels.
+    """
+    return
+
+
+def create_random_image_url():
+    """
+    Creates the URL for a random image from some <<IMAGE_QUERY_SITE>>
+    and returns the URL as a string.
+
+    :return: str
+    """
+    url_parts = [
+        IMAGE_MICROSERVICE_SERVER,
+        '/image_url_query'
+    ]
+    return ''.join(url_parts)
+
+
+@app.route('/display/<filename>')
+def display_image(filename: str) -> Response:
+    """
+    Displays the image at filename location with a redirect response.
+
+    :param filename: name of file to display
+    :return: Response
+    """
+    return redirect(url_for('static', filename='uploads/' + filename), code=301)
+
+
 @app.route('/')
 def get_home_page():
     """
@@ -92,44 +95,58 @@ def get_home_page():
     return render_template('index.html')
 
 
+def get_img_arr_dims(arr: np.ndarray) -> None:
+    """
+    Prints the img shape and dimensions
+
+    :param arr:
+    :return: None
+    """
+    if arr:
+        print(arr.ndim)
+        print(arr.shape)
+
+
 @app.route('/', methods=['POST'])
 def image_upload():
     """
     Displays the image to the screen.
 
-    :return:
+    :return: str or Response
     """
-    # if there is a form, then proceed with rand
+    # if there is a form, then the image resulted from the microservice
     if request.form:
         url = create_random_image_url()
-        # print(url)
+        # response is a text url
         response = requests.get(url, params={'url': IMAGE_QUERY_SITE})
-        # print(response.text)
-        # return response.text
-        return render_template('index.html', filename=response.text, is_upload=False)
+        img_arr = None
+        img_arr = create_img_array(img_arr, file_name=response.text)
+        return render_template('index.html', filename=response.text, is_upload=False, hex_colors=img_arr)
+    else:
+        file = request.files['file']
 
-    file = request.files['file']
-    if file.filename == '':
-        flash('No image selected for uploading')
-        return redirect(request.url)
     if file and valid_image(file.filename):
+        # image is uploaded -> secure it and store it
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        # print('upload_image filename: ' + filename)
-        # flash('Image successfully uploaded and displayed below')
-        arr = None
-        arr = create_img_array(arr, file_name=filename)
-        print(arr.ndim)
-        print(arr.shape)
-        return render_template('index.html', filename=filename, is_upload=True)
+        img_arr = None
+        img_arr = create_img_array(img_arr, file_name=filename)
+        return render_template('index.html', filename=filename, is_upload=True, hex_colors=img_arr)
     else:
-        # flash('Allowed image types are -> png, jpg, jpeg, gif')
         return redirect(request.url)
 
 
-@app.route('/display/<filename>')
-def display_image(filename):
-    return redirect(url_for('static', filename='uploads/' + filename), code=301)
+def valid_image(img_name) -> bool:
+    """
+    Determines if the img ends with a valid extension.
+
+    :param img_name: str
+    :return: bool
+    """
+    is_valid_name = '.' in img_name
+    is_valid_ext = img_name.rsplit('.', 1)[1].lower() in IMAGE_EXTENSIONS
+
+    return is_valid_name and is_valid_ext
 
 
 if __name__ == '__main__':
