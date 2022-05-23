@@ -18,9 +18,25 @@ IMAGE_EXTENSIONS = ('png', 'jpg', 'jpeg', 'gif')
 IMAGE_MICROSERVICE_SERVER = 'http://127.0.0.1:4200'
 IMAGE_QUERY_SITE = 'https://unsplash.com/s/photos/sky?orientation=squarish'
 RANDOM_IMAGE_COUNTER = 0
-
+# APP GLOBALS
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+
+# PROGRAM FUNCTIONS
+def create_random_image_url():
+    """
+    Creates the URL for a random image from some <<IMAGE_QUERY_SITE>>
+    and returns the URL as a string.
+
+    :return: str
+    """
+    url_parts = [
+        IMAGE_MICROSERVICE_SERVER,
+        '/image_url_query'
+    ]
+    return ''.join(url_parts)
+
 
 def valid_image(img_name) -> bool:
     """
@@ -70,6 +86,7 @@ def create_img_array(np_arr: np.ndarray = None,
 def get_home_page():
     """
     Function that returns the main home page of the website.
+
     :return: str
     """
     return render_template('index.html')
@@ -112,21 +129,7 @@ def image_upload():
 
 @app.route('/display/<filename>')
 def display_image(filename):
-    # print('display_image filename: ' + filename)
     return redirect(url_for('static', filename='uploads/' + filename), code=301)
-
-
-def create_random_image_url():
-    """
-    Creates the URL for a random image from some site
-    and returns the string to call the image microservice.
-    :return: str
-    """
-    url_parts = [
-        IMAGE_MICROSERVICE_SERVER,
-        '/image_url_query'
-    ]
-    return ''.join(url_parts)
 
 
 if __name__ == '__main__':
