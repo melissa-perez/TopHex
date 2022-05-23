@@ -14,10 +14,10 @@ from os.path import join, dirname, realpath
 
 # PROGRAM CONSTANTS
 UPLOAD_FOLDER = join(dirname(realpath(__file__)), 'static\\uploads\\')
-print(UPLOAD_FOLDER)
 IMAGE_EXTENSIONS = ('png', 'jpg', 'jpeg', 'gif')
 IMAGE_MICROSERVICE_SERVER = 'http://127.0.0.1:4200'
 IMAGE_QUERY_SITE = 'https://unsplash.com/s/photos/sky?orientation=squarish'
+RANDOM_IMAGE_COUNTER = 0
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -58,11 +58,11 @@ def create_img_array(np_arr: np.ndarray = None,
     :return: np.ndarray
     """
     if from_internet:
-        pass
+        load_image_to_array = Image.open(requests.get(url, stream=True).raw)
     else:
         load_image_to_array = Image.open(f'{UPLOAD_FOLDER}/{file_name}')
-        if not np_arr:
-            np_arr = asarray(load_image_to_array)
+    if not np_arr:
+        np_arr = asarray(load_image_to_array)
     return np_arr
 
 
