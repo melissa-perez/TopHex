@@ -4,3 +4,11 @@
 
 
 }
+
+.colorbox{
+    background-color: var(--main-color);
+    width:20%;
+    padding-bottom: 20%;
+    border-radius: 10px;
+    height: 20%;
+}

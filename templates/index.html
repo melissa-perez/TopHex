@@ -28,6 +28,12 @@
 		<img src="{{filename}}">
 	</div>
 {% endif %}
+<h1>Top Hex</h1>
+<ul>
+{% for color in hex_colors %}
+  <li>{{ color }} <div  class="colorbox" style="--main-color:{{ color }};"></div></li>
+{% endfor %}
+</ul>
 <form method="POST" action="/" enctype="multipart/form-data">
     <dl>
 		<p>
