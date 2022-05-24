@@ -146,8 +146,6 @@ def top_hex_colors(img_arr: np.ndarray,
     colors_dict = {}
     pixel_colors = []
 
-    get_img_arr_dims(img_arr)
-
     for row in img_arr:
         for col in row:
             pixel_colors.append(bytes(tuple(col)).hex())

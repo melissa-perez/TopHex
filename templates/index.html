@@ -7,9 +7,11 @@
     <div class="container phototable">
 			<div>
 				{% if filename and is_upload %}
-					<img class="photo" src="{{ url_for('display_image', filename=filename) }}">
-				{% elif filename%}
-					<img class="photo" src="{{filename}}">
+					<img class="photo" src="{{ url_for('display_image', filename=filename) }}" alt="Image uploaded is displayed.">
+				{% elif filename %}
+					<img class="photo" src="{{filename}}" alt="Random image from unspash.com/sky is displayed.">
+				{% else %}
+					<div class="emptyimage"><div class="emptyimagetext">No image displayed.</div></div>
 				{% endif %}
 			</div>
 			<table class="table">
