@@ -1,18 +1,12 @@
 import numpy as np
 import os
-import typing
 import requests
 import urllib.request
-import matplotlib.pyplot as plt
-from flask import Flask, flash, request, redirect, url_for, render_template
-from flask_bootstrap import Bootstrap
-from flask_wtf import FlaskForm
+from flask import Flask, request, redirect, url_for, render_template
 from PIL import Image
-from numpy import asarray
 from requests import Response
 from werkzeug.utils import secure_filename
 from os.path import join, dirname, realpath
-from matplotlib.colors import rgb2hex
 
 # PROGRAM CONSTANTS
 
@@ -51,7 +45,7 @@ def create_img_array(np_arr: np.ndarray = None,
     else:
         load_image_to_array = Image.open(f'{UPLOAD_FOLDER}/{file_name}')
     if not np_arr:
-        np_arr = asarray(load_image_to_array)
+        np_arr = np.array(load_image_to_array, dtype="int32")
     return np_arr
 
 
@@ -99,9 +93,9 @@ def get_home_page():
 
 def get_img_arr_dims(arr: np.ndarray) -> None:
     """
-    Prints the img shape and dimensions
+    Prints the img shape and dimensions.
 
-    :param arr:
+    :param arr: image array
     :return: None
     """
     if arr.any():
@@ -120,9 +114,7 @@ def image_upload():
     if request.form:
         url = create_random_image_url()
         # response is a text url
-        print("sending a request to ", url)
         response = requests.get(url, params={'url': IMAGE_QUERY_SITE})
-        print("received a response from ", url, " which was ", response.text)
 
         img_arr = None
         # img_arr = create_img_array(img_arr, file_name=response.text)
@@ -152,9 +144,15 @@ def top_hex_colors(img_arr: np.ndarray,
     :return: list
     """
     colors_dict = {}
-    convert_to_color_codes = convert_to_hex(img_arr)
+    pixel_colors = []
 
-    for color in convert_to_color_codes:
+    get_img_arr_dims(img_arr)
+
+    for row in img_arr:
+        for col in row:
+            pixel_colors.append(bytes(tuple(col)).hex())
+
+    for color in pixel_colors:
         if color not in colors_dict:
             colors_dict[color] = 1
         else:
@@ -163,17 +161,6 @@ def top_hex_colors(img_arr: np.ndarray,
     hex_colors_list = sorted(colors_dict, key=colors_dict.get, reverse=True)[:TOP_COLORS]
     hex_colors_list = ['#' + code for code in hex_colors_list]
     return hex_colors_list
-
-
-def convert_to_hex(top_values: np.ndarray) -> list:
-    """
-    Converts the values into equivalent hex values.
-
-    :param top_values: list
-    :return: list
-    """
-    top_values = (1 << 24) + ((top_values[:, :, 0] << 16) + (top_values[:, :, 1] << 8) + top_values[:, :, 2])
-    return [hex(x)[-6:] for x in top_values.ravel()]
 
 
 def valid_image(img_name) -> bool:
