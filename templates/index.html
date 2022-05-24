@@ -4,21 +4,34 @@
 <body>
     {% include "navigation.html" %}
 
-    <div class="container">
-			{% if filename and is_upload %}
-				<img src="{{ url_for('display_image', filename=filename) }}">
-			{% elif filename%}
-				<img src="{{filename}}">
-			{% endif %}
-	</div>
-
-
-	<div>
-		<ul>
-			{% for color in hex_colors %}
-		  		<li>{{ color }} <div  class="colorbox" style="--main-color:{{ color }};"></div></li>
-			{% endfor %}
-		</ul>
+    <div class="container phototable">
+			<div>
+				{% if filename and is_upload %}
+					<img class="photo" src="{{ url_for('display_image', filename=filename) }}">
+				{% elif filename%}
+					<img class="photo" src="{{filename}}">
+				{% endif %}
+			</div>
+			<table class="table">
+			  <thead>
+				<tr>
+				  <th scope="col">Color</th>
+				  <th scope="col">Hex Code</th>
+				</tr>
+			  </thead>
+			  <tbody>
+				{% for color in hex_colors %}
+					<tr>
+						<td>
+							<div class="colorbox" style="--main-color:{{ color }};"></div>
+						</td>
+						<td>
+							{{ color }}
+						</td>
+					</tr>
+				{% endfor %}
+			  </tbody>
+			</table>
 	</div>
 
 	<div>

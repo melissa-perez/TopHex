@@ -1,14 +1,27 @@
 .button-container {
     display: grid;
-
-
-
 }
 
 .colorbox{
     background-color: var(--main-color);
-    width:20%;
-    padding-bottom: 20%;
+    width: 10%;
+    padding-bottom: 10%;
     border-radius: 10px;
-    height: 20%;
+    height: 10%;
+}
+
+.photo {
+     width: 500px;
+     height: 500px;
+     background-position: 50% 50%;
+     background-repeat: no-repeat;
+     background-size: cover;
+
+}
+
+.phototable {
+    margin: 5%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(1, 1fr);
 }
