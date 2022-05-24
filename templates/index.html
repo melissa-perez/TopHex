@@ -4,23 +4,12 @@
 <body>
     {% include "navigation.html" %}
 
-	<div class="container">
-		<nav class="navbar navbar-dark bg-dark">
-			<a class="navbar-brand">TopHex</a>
-			<a class="navbar-brand" href="#">aaaa</a>
-		</nav>
-	</div>
-
-    <div>
-		{% if filename and is_upload %}
-		<div>
-			<img src="{{ url_for('display_image', filename=filename) }}">
-		</div>
-		{% elif filename%}
-		<div>
-			<img src="{{filename}}">
-		</div>
-		{% endif %}
+    <div class="container">
+			{% if filename and is_upload %}
+				<img src="{{ url_for('display_image', filename=filename) }}">
+			{% elif filename%}
+				<img src="{{filename}}">
+			{% endif %}
 	</div>
 
 
