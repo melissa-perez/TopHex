@@ -6,6 +6,10 @@
    font-family: 'Roboto', sans-serif;
 }
 
+table {
+    table-layout: fixed;
+}
+
 .colorbox{
     background-color: var(--main-color);
     position: relative;
@@ -30,7 +34,7 @@
     margin-left: auto;
     margin-right: auto;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 4fr);
     grid-template-rows: repeat(1, 1fr);
     padding-top: 10%;
 }

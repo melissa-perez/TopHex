@@ -54,10 +54,7 @@ def load_img_to_array(np_arr: np.ndarray = None,
 # trying Pithikos SO answer and adapted by me for my program
 def get_dominant_color(img_arr, palette_size=TOP_COLORS):
     # Resize image to speed up processing
-    print(img_arr)
-    print(type(img_arr))
     data = Image.fromarray((img_arr * 1).astype(np.uint8)).convert('RGB')
-    print(data)
     img = data.copy()
     img.thumbnail((100, 100))
 
@@ -67,15 +64,10 @@ def get_dominant_color(img_arr, palette_size=TOP_COLORS):
     # Find the color that occurs most often
     palette = paletted.getpalette()
     color_counts = sorted(paletted.getcolors(), reverse=True)
-    print(color_counts)
     dominant_colors = []
     for color in color_counts:
-        print(color)
         palette_index = color[1]
-        print(palette_index)
         dominant_colors.append(palette[palette_index * 3:palette_index * 3 + 3])
-
-    print(dominant_colors)
     return dominant_colors
 
 
@@ -149,7 +141,12 @@ def image_upload():
         img_arr = None
         img_arr = load_img_to_array(img_arr, url=response.text, from_internet=True)
         top_hex_list = top_hex_colors(img_arr)
-        return render_template('index.html', filename=response.text, is_upload=False, hex_colors=top_hex_list)
+        top_primary = get_dominant_color(img_arr)
+
+        for i in range(len(top_primary)):
+            top_primary[i] = bytes(tuple(top_primary[i])).hex()
+        top_primary = ['#' + code for code in top_primary]
+        return render_template('index.html', filename=response.text, is_upload=False, colors=zip(top_hex_list,top_primary))
     else:
         file = request.files['file']
 
