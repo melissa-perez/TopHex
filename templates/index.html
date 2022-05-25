@@ -17,18 +17,26 @@
 				<table class="table phototableitem">
 				  <thead>
 					<tr>
-					  <th scope="col">Color</th>
+					  <th scope="col">Hex Color</th>
 					  <th scope="col">Hex Code</th>
+					  <th scope="col">Primary Color</th>
+					  <th scope="col">Primary Code</th>
 					</tr>
 				  </thead>
 				  <tbody>
-					{% for color in hex_colors %}
+					{% for hex, prim in colors %}
 						<tr>
 							<td>
-								<div class="colorbox" style="--main-color:{{ color }};"></div>
+								<div class="colorbox" style="--main-color:{{ hex }};"></div>
 							</td>
 							<td>
-								{{ color }}
+								{{ hex }}
+							</td>
+							<td>
+								<div class="colorbox" style="--main-color:{{ prim }};"></div>
+							</td>
+							<td>
+								{{ prim }}
 							</td>
 						</tr>
 					{% endfor %}
@@ -54,7 +62,7 @@
 	</div>
 	</div>
 
-
+	{% include "footer.html" %}
 
 <!--- Bootstrap scripts --->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

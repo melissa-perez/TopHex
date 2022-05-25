@@ -31,3 +31,4 @@ WTForms==3.0.1
 zipp==3.8.0
 
 requests~=2.27.1
+colorthief~=0.2.1
