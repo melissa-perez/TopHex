@@ -117,9 +117,9 @@ def image_upload():
         response = requests.get(url, params={'url': IMAGE_QUERY_SITE})
 
         img_arr = None
-        # img_arr = create_img_array(img_arr, file_name=response.text)
-        # print(img_arr)
-        return render_template('index.html', filename=response.text, is_upload=False, hex_colors=img_arr)
+        img_arr = create_img_array(img_arr, url=response.text, from_internet=True)
+        top_hex_list = top_hex_colors(img_arr)
+        return render_template('index.html', filename=response.text, is_upload=False, hex_colors=top_hex_list)
     else:
         file = request.files['file']
 

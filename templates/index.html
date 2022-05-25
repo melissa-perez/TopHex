@@ -3,57 +3,58 @@
 	{% include "header.html" %}
 <body>
     {% include "navigation.html" %}
-
-    <div class="container phototable">
-			<div>
-				{% if filename and is_upload %}
-					<img class="photo" src="{{ url_for('display_image', filename=filename) }}" alt="Image uploaded is displayed.">
-				{% elif filename %}
-					<img class="photo" src="{{filename}}" alt="Random image from unspash.com/sky is displayed.">
-				{% else %}
-					<div class="emptyimage"><div class="emptyimagetext">No image displayed.</div></div>
-				{% endif %}
-			</div>
-			<table class="table">
-			  <thead>
-				<tr>
-				  <th scope="col">Color</th>
-				  <th scope="col">Hex Code</th>
-				</tr>
-			  </thead>
-			  <tbody>
-				{% for color in hex_colors %}
+    <div class="container photoarea">
+			<div class="phototable">
+				<section>
+					{% if filename and is_upload %}
+						<img class="photo phototableitem" src="{{ url_for('display_image', filename=filename) }}" alt="Image uploaded is displayed.">
+					{% elif filename %}
+						<img class="photo phototableitem" src="{{filename}}" alt="Random image from unspash.com/sky is displayed.">
+					{% else %}
+						<div class="emptyimage phototableitem"><div class="emptyimagetext">No image displayed.</div></div>
+					{% endif %}
+				</section>
+				<table class="table phototableitem">
+				  <thead>
 					<tr>
-						<td>
-							<div class="colorbox" style="--main-color:{{ color }};"></div>
-						</td>
-						<td>
-							{{ color }}
-						</td>
+					  <th scope="col">Color</th>
+					  <th scope="col">Hex Code</th>
 					</tr>
-				{% endfor %}
-			  </tbody>
-			</table>
+				  </thead>
+				  <tbody>
+					{% for color in hex_colors %}
+						<tr>
+							<td>
+								<div class="colorbox" style="--main-color:{{ color }};"></div>
+							</td>
+							<td>
+								{{ color }}
+							</td>
+						</tr>
+					{% endfor %}
+				  </tbody>
+				</table>
+			</div>
 	</div>
 
-	<div>
+	<div class="container formarea">
+		<div>
+			<form method="POST" action="/" enctype="multipart/form-data">
+					<p><strong>Choose a file from your computer and click submit.</strong></p>
+					<input class="btn" type="file" id="fileUpload" name="file" autocomplete="off" required>
+					<input type="submit" class="btn btn-primary" value="Submit">
+			</form>
+		</div>
+
+		<div>
 		<form method="POST" action="/" enctype="multipart/form-data">
-			<p>
-				<input type="file" name="file" autocomplete="off" required>
-			</p>
-			<p>
-				<input type="submit" value="Submit">
-			</p>
+			<p><strong>Or click the Random button to load a test image from Unsplash.com.</strong></p>
+			<input class="btn btn-dark" type="submit" name="random_button" id="random_button" value="Random" >
 		</form>
+	</div>
 	</div>
 
-	<div>
-		<form method="POST" action="/" enctype="multipart/form-data">
-			<p>
-				<input type="submit" name="random_button" id="random_button" value="Random" >
-			</p>
-		</form>
-	</div>
+
 
 <!--- Bootstrap scripts --->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
