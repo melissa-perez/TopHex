@@ -1,4 +1,3 @@
-import urllib
 import PIL
 import numpy as np
 import os
@@ -76,7 +75,7 @@ def get_dominant_color(img_arr, palette_size=TOP_COLORS) -> List:
     dominant_colors = []
     for color in color_counts:
         palette_index = color[1]
-        dominant_colors.append(palette[palette_index * \
+        dominant_colors.append(palette[palette_index *
                                        3:palette_index * 3 + 3])
 
     for i in range(len(dominant_colors)):
@@ -141,7 +140,8 @@ def top_hex_colors(img_arr: np.ndarray,
             colors_dict[color] += 1
 
     if hex_colors_list is None:
-        hex_colors_list = sorted(colors_dict, key=colors_dict.get, reverse=True)[:TOP_COLORS]
+        hex_colors_list = sorted(colors_dict, key=colors_dict.get,
+                                 reverse=True)[:TOP_COLORS]
         hex_colors_list = ['#' + code for code in hex_colors_list]
 
     return hex_colors_list
