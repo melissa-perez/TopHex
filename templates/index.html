@@ -7,14 +7,14 @@
 		<div class="phototable">
 			<section>
 				{% if filename and is_upload %}
-					<img class="photo phototableitem" src="{{ url_for('display_image', filename=filename) }}" alt="Image uploaded is displayed.">
+					<img class="photo" src="{{ url_for('display_image', filename=filename) }}" alt="Image uploaded is displayed.">
 				{% elif filename %}
-					<img class="photo phototableitem" src="{{filename}}" alt="Random image from unspash.com/sky is displayed.">
+					<img class="photo" src="{{filename}}" alt="Random image from unspash.com/sky is displayed.">
 				{% else %}
-					<div class="emptyimage phototableitem"><div class="emptyimagetext">No image uploaded.</div></div>
+					<div class="emptyimage"><div class="emptyimagetext">No image uploaded.</div></div>
 				{% endif %}
 			</section>
-			<table class="table phototableitem">
+			<table class="table">
 				<caption>Top 5 Hex Colors</caption>
 				<thead>
 					<tr>
