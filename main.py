@@ -206,7 +206,7 @@ def image_upload():
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             img_arr = load_img_to_array(img_arr, file_name=filename)
         else:
-            redirect(request.url)
+            return redirect(request.url)
 
     top_hex_list = top_hex_colors(img_arr)
     top_primary = get_dominant_color(img_arr)
