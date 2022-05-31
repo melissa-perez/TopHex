@@ -63,3 +63,7 @@ footer {
     margin: 5%;
     text-align: center;
 }
+
+caption {
+    caption-side: top
+}

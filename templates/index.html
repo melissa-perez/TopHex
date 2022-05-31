@@ -4,45 +4,46 @@
 <body>
     {% include "navigation.html" %}
     <div class="container photoarea">
-			<div class="phototable">
-				<section>
-					{% if filename and is_upload %}
-						<img class="photo phototableitem" src="{{ url_for('display_image', filename=filename) }}" alt="Image uploaded is displayed.">
-					{% elif filename %}
-						<img class="photo phototableitem" src="{{filename}}" alt="Random image from unspash.com/sky is displayed.">
-					{% else %}
-						<div class="emptyimage phototableitem"><div class="emptyimagetext">No image displayed.</div></div>
-					{% endif %}
-				</section>
-				<table class="table phototableitem">
-				  <thead>
+		<div class="phototable">
+			<section>
+				{% if filename and is_upload %}
+					<img class="photo phototableitem" src="{{ url_for('display_image', filename=filename) }}" alt="Image uploaded is displayed.">
+				{% elif filename %}
+					<img class="photo phototableitem" src="{{filename}}" alt="Random image from unspash.com/sky is displayed.">
+				{% else %}
+					<div class="emptyimage phototableitem"><div class="emptyimagetext">No image uploaded.</div></div>
+				{% endif %}
+			</section>
+			<table class="table phototableitem">
+				<caption>Top 5 Hex Colors</caption>
+				<thead>
 					<tr>
-					  <th scope="col">Hex Color</th>
-					  <th scope="col">Hex Code</th>
-					  <th scope="col">Primary Color</th>
-					  <th scope="col">Primary Code</th>
+					  <th scope="col">Complete Palette Color</th>
+					  <th scope="col">Complete Palette Code</th>
+					  <th scope="col">Simplified Palette Color</th>
+					  <th scope="col">Simplified  Palette Code</th>
 					</tr>
-				  </thead>
-				  <tbody>
+				</thead>
+				<tbody>
 					{% for hex, prim in colors %}
-						<tr>
-							<td>
-								<div class="colorbox" style="--main-color:{{ hex }};"></div>
-							</td>
-							<td>
-								{{ hex }}
-							</td>
-							<td>
-								<div class="colorbox" style="--main-color:{{ prim }};"></div>
-							</td>
-							<td>
-								{{ prim }}
-							</td>
-						</tr>
+					<tr>
+						<td>
+							<div class="colorbox" style="--main-color:{{ hex }};"></div>
+						</td>
+						<td>
+							{{ hex }}
+						</td>
+						<td>
+							<div class="colorbox" style="--main-color:{{ prim }};"></div>
+						</td>
+						<td>
+							{{ prim }}
+						</td>
+					</tr>
 					{% endfor %}
-				  </tbody>
-				</table>
-			</div>
+				</tbody>
+			</table>
+		</div>
 	</div>
 
 	<div class="container formarea">
