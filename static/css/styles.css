@@ -72,4 +72,15 @@ caption {
   .phototable {
     grid-template-columns: 1fr;
   }
+
+  .formarea {
+    grid-template-columns: 1fr;
+  }
+
+  .photo {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+  }
 }
+
