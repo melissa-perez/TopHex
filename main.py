@@ -190,6 +190,7 @@ def image_upload():
     :return: str or Response
     """
     img_arr = None
+    file = ''
 
     if request.form:
         url = create_random_image_url()
@@ -197,16 +198,15 @@ def image_upload():
         response = requests.get(url, params={'url': IMAGE_QUERY_SITE})
         img_arr = load_img_to_array(img_arr, url=response.text,
                                     from_internet=True)
-    else:
+    elif request.files:
         file = request.files['file']
-
-    if file and valid_image(file.filename):
-        # secure uploaded file
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        img_arr = load_img_to_array(img_arr, file_name=filename)
-    else:
-        return redirect(request.url)
+        if file and valid_image(file.filename):
+            # secure uploaded file
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            img_arr = load_img_to_array(img_arr, file_name=filename)
+        else:
+            redirect(request.url)
 
     top_hex_list = top_hex_colors(img_arr)
     top_primary = get_dominant_color(img_arr)
