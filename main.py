@@ -167,7 +167,9 @@ def display_image(filename: str) -> Response:
     :param filename: name of file to display
     :return: Response
     """
-    return redirect(url_for('static', filename='uploads/' + filename), code=301)
+    return redirect(url_for('static',
+                            filename='uploads/' + filename),
+                    code=301)
 
 
 @app.route('/')
